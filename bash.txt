@@ -1,5 +1,51 @@
-# .Arch Sanctuary Custom Prompt
-export PS1="\[\e[38;5;13m\]\u\[\e[m\]\[\e[38;5;15m\]@\[\e[m\]\[\e[38;5;39;1m\]\h \[\e[38;5;255m\]\w \[\e[38;5;13;1m\]» \[\e[m\]"
-
-# Auto Fastfetch
-fastfetch
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "string",
+    "source": [
+      "                                 ",
+      "  \u001b[35;1m       ..  .:-=+*+=-:.  ..  \u001b[m",
+      "  \u001b[35;1m    .:=##*+++++*##=:.\u001b[m",
+      "  \u001b[35;1m   -=##++++=##+++++*##=-  \u001b[m",
+      "  \u001b[35;1m  =##+** =##+    **+##= \u001b[m",
+      "  \u001b[35;1m =##*+     =##+     +*##= \u001b[m",
+      "  \u001b[35;1m +##* =##+      +##+\u001b[m",
+      "  \u001b[35;1m *##+      =##+      +##*\u001b[m",
+      "  \u001b[35;1m +##* =##+      +##+\u001b[m",
+      "  \u001b[35;1m =##*+     =##+     +*##= \u001b[m",
+      "  \u001b[35;1m  =##+** =##+    **+##= \u001b[m",
+      "  \u001b[35;1m   -=##++++=##+++++*##=-  \u001b[m",
+      "  \u001b[35;1m    .:=##*+++++*##=:.\u001b[m",
+      "  \u001b[35;1m       ..  .:-=+*+=-:.  ..  \u001b[m",
+      "  \u001b[m",
+      "  \u001b[36;1m      A <- DotArch\u001b[m",
+      "  \u001b[m",
+      "  \u001b[37;1m.Arch Sanctuary [Minimal CLI Distro]\u001b[m"
+    ]
+  },
+  "display": {
+    "separator": " \u001b[35;1m»\u001b[m "
+  },
+  "modules": [
+    "title",
+    "separator",
+    {
+      "type": "os",
+      "format": "Arch {release}"
+    },
+    "kernel",
+    "uptime",
+    "packages",
+    "shell",
+    {
+      "type": "cpu",
+      "format": "{name} @ {speed-max}"
+    },
+    "memory",
+    "swap",
+    "disk",
+    "locale",
+    "break",
+    "colors"
+  ]
+}
