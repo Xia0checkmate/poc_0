@@ -21,9 +21,6 @@
       "                                 "
     ]
   },
-  "display": {
-    "separator": " \u001b[35;1m»\u001b[m "
-  },
   "modules": [
     "title",
     "separator",
