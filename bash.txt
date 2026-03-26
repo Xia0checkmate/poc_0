@@ -1,0 +1,5 @@
+# .Arch Sanctuary Custom Prompt
+export PS1="\[\e[35;1m\]\u\[\e[m\]@\[\e[36;1m\]\h \[\e[37;1m\]\w \[\e[35;1m\]> \[\e[m\]"
+
+# Auto Fastfetch
+fastfetch
