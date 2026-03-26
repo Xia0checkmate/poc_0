@@ -1,37 +1,5 @@
-{
-  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-  "logo": {
-    "type": "string",
-    "source": [
-      "                                 ",
-      "   \u001b[35;1m      ..  .:-=+*+=-:.  ..    \u001b[m",
-      "   \u001b[35;1m   .:=##*+++++*##=:.\u001b[m",
-      "   \u001b[35;1m -=##++++=##+++++*##=-  \u001b[m",
-      "   \u001b[35;1m=##+** =##+    **+##= \u001b[m",
-      "   \u001b[35;1m+##* =##+      +##+\u001b[m",
-      "   \u001b[35;1m*##+      =##+      +##*\u001b[m",
-      "   \u001b[35;1m+##* =##+      +##+\u001b[m",
-      "   \u001b[35;1m-=##++++=##+++++*##=-  \u001b[m",
-      "   \u001b[35;1m   .:=##*+++++*##=:.\u001b[m",
-      "   \u001b[35;1m      ..  .:-=+*+=-:.  ..    \u001b[m",
-      "                                 ",
-      "   \u001b[36;1m      A <- DotArch\u001b[m",
-      "                                 ",
-      "   \u001b[37;1m.Arch Sanctuary [Minimal CLI]\u001b[m",
-      "                                 "
-    ]
-  },
-  "modules": [
-    "title",
-    "separator",
-    "os",
-    "kernel",
-    "uptime",
-    "packages",
-    "shell",
-    "cpu",
-    "memory",
-    "break",
-    "colors"
-  ]
-}
+# --- .Arch Sanctuary Minimal Fetch ---
+alias fetch='fastfetch --structure Title:Separator:OS:Kernel:Uptime:Packages:Shell:CPU:Memory:Colors --color-keys 35 --color-title 36'
+
+echo -e "\e[35;1m   A <- .Arch Sanctuary\e[m"
+fetch
