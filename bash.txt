@@ -1,5 +1,8 @@
-# --- .Arch Sanctuary Minimal Fetch ---
-alias fetch='fastfetch --structure Title:Separator:OS:Kernel:Uptime:Packages:Shell:CPU:Memory:Colors --color-keys 35 --color-title 36'
+# --- .Arch Sanctuary Clean Look ---
 
-echo -e "\e[35;1m   A <- .Arch Sanctuary\e[m"
+alias fetch='fastfetch --logo none --color-keys 35 --color-title 36 --structure Title:Separator:OS:Kernel:Uptime:Packages:Shell:CPU:Memory:Colors'
+
+echo -e "\n\e[35;1m   A <- .Arch Sanctuary\e[m"
+echo -e "\e[36;1m   --------------------\e[m"
+
 fetch
