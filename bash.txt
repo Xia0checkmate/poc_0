@@ -1,4 +1,0 @@
-# --- Arch Sanctuary Minimal Look ---
-alias fetch='fastfetch --logo none --color-keys 35 --color-title 36'
-
-fetch
